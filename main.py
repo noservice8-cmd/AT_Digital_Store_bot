@@ -18,14 +18,14 @@ def keep_alive():
     t.start()
 
 # ၂။ Bot Setup
-# TOKEN ကို လုံခြုံအောင် သိမ်းဆည်းပါ
 TOKEN = '8741651961:AAH0uuIJ10pMPveeI27f7hU_WjIGXbbLZUY'
 ADMIN_ID = '6343475200' 
 bot = telebot.TeleBot(TOKEN)
 
-# ၃။ ပုံ Link များ (GitHub Direct Links)
-LOGO_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/Logo.jpg?raw=true"
-CANVA_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/1.jpg?raw=true"
+# ၃။ ပုံ Link များ (Raw GitHub Content Links သုံးထားပါသည်)
+# ဤလင့်များက ပုံတက်လာဖို့ ပိုမိုသေချာစေပါသည်
+LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
+CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 
 # ၄။ ပင်မ Menu ပြသသည့် Function
 def send_menu(message):
@@ -48,7 +48,8 @@ def send_menu(message):
     try:
         # Logo ပုံနှင့် ကြိုဆိုစာသားကို တွဲပို့ခြင်း
         bot.send_photo(message.chat.id, LOGO_IMAGE, caption=welcome_text, reply_markup=markup, parse_mode='Markdown')
-    except:
+    except Exception as e:
+        print(f"Error Logo: {e}")
         bot.send_message(message.chat.id, welcome_text, reply_markup=markup, parse_mode='Markdown')
 
 # /start သို့မဟုတ် /refresh ရိုက်လျှင် Menu ပြခြင်း
@@ -66,7 +67,8 @@ def show_products(message):
     
     try:
         bot.send_photo(message.chat.id, LOGO_IMAGE, caption=product_text, reply_markup=markup, parse_mode='Markdown')
-    except:
+    except Exception as e:
+        print(f"Error Product List Image: {e}")
         bot.send_message(message.chat.id, product_text, reply_markup=markup, parse_mode='Markdown')
 
 # Canva Pro (Edu) အသေးစိတ်ပြသခြင်း
@@ -92,14 +94,14 @@ def canva_detail(call):
     
     try:
         bot.send_photo(call.message.chat.id, CANVA_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
-    except:
+    except Exception as e:
+        print(f"Error Canva Image: {e}")
         bot.send_message(call.message.chat.id, detail_text, reply_markup=markup, parse_mode='Markdown')
 
 # 💳 ငွေလွှဲအကောင့်များ ပြသခြင်း
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_now')
 @bot.message_handler(func=lambda message: message.text == '💳 ငွေလွှဲအကောင့်များ')
 def payment_info(message):
-    # Callback သို့မဟုတ် Message နှစ်မျိုးလုံးမှ လက်ခံနိုင်ရန်
     chat_id = message.chat.id if hasattr(message, 'chat') else message.message.chat.id
     pay_text = (
         "💳 **ငွေလွှဲရန် အကောင့်**\n\n"
@@ -126,7 +128,6 @@ def refresh_menu(message):
 def send_key_to_user(message):
     if str(message.chat.id) == ADMIN_ID:
         try:
-            # /sendkey [UserID] [Text]
             args = message.text.split(maxsplit=2)
             target_user_id = args[1]
             content = args[2]
@@ -150,7 +151,6 @@ def handle_receipt(message):
     bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(ADMIN_ID, f"📸 **ငွေလွှဲပြေစာ ရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`", parse_mode='Markdown')
 
-# Bot အား စတင် Run ခြင်း
 if __name__ == "__main__":
     keep_alive()
     bot.infinity_polling()
