@@ -30,7 +30,7 @@ def send_menu(message):
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
     item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
-    item4 = types.KeyboardButton('🔄 Refresh / ပြန်စတင်ရန်')
+    item4 = types.KeyboardButton('🔄 Refresh (ပြန်စတင်ရန်)')
     
     markup.add(item1)
     markup.add(item2, item3)
