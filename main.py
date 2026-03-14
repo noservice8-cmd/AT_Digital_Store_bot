@@ -22,7 +22,7 @@ TOKEN = '8741651961:AAH0uuIJ10pMPveeI27f7hU_WjIGXbbLZUY'
 ADMIN_ID = '6343475200' 
 bot = telebot.TeleBot(TOKEN)
 
-# ၃။ ပုံ Link များ
+# ၃။ ပုံ Link များ (Raw GitHub Links)
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 
@@ -32,11 +32,12 @@ def send_menu(message):
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
     item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
-    item4 = types.KeyboardButton('🔄 Refresh (ပြန်စတင်ရန်)')
+    item4 = types.KeyboardButton('🤝 Resell လုပ်လိုသူများ')
+    item5 = types.KeyboardButton('🔄 Refresh (ပြန်စတင်ရန်)')
     
     markup.add(item1)
     markup.add(item2, item3)
-    markup.add(item4)
+    markup.add(item4, item5)
     
     welcome_text = (
         "✨ **AT Digital Store** မှ ကြိုဆိုပါတယ်။\n\n"
@@ -67,7 +68,16 @@ def show_products(message):
     except:
         bot.send_message(message.chat.id, product_text, reply_markup=markup, parse_mode='Markdown')
 
-# 💳 ငွေလွှဲအကောင့်များ (Logo ပုံနှင့်အတူပြသခြင်း)
+# 🤝 Resell လုပ်လိုသူများ (Logo ပုံနှင့်အတူပြသခြင်း)
+@bot.message_handler(func=lambda message: message.text == '🤝 Resell လုပ်လိုသူများ')
+def resell_info(message):
+    resell_text = "🤝 **Resell လုပ်လိုသူများအတွက်**\n\nဝန်ဆောင်မှုများကို တစ်ဆင့်ပြန်လည်ရောင်းချလိုပါက Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ပေးပါရန်။\n\n🔗 Admin: @kokowphyo"
+    try:
+        bot.send_photo(message.chat.id, LOGO_IMAGE, caption=resell_text, parse_mode='Markdown')
+    except:
+        bot.send_message(message.chat.id, resell_text, parse_mode='Markdown')
+
+# 💳 ငွေလွှဲအကောင့်များ
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_now')
 @bot.message_handler(func=lambda message: message.text == '💳 ငွေလွှဲအကောင့်များ')
 def payment_info(message):
@@ -85,7 +95,7 @@ def payment_info(message):
     except:
         bot.send_message(chat_id, pay_text, parse_mode='Markdown')
 
-# 👨‍💻 Admin ဆက်သွယ်ရန် (Logo ပုံနှင့်အတူပြသခြင်း)
+# 👨‍💻 Admin ဆက်သွယ်ရန်
 @bot.message_handler(func=lambda message: message.text == '👨‍💻 Admin ဆက်သွယ်ရန်')
 def contact_admin(message):
     admin_text = "🔗 **Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ရန်**\n👉 @kokowphyo"
@@ -98,11 +108,15 @@ def contact_admin(message):
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
-        "🎨 **Canva EDU account (1 Year)**\n\n"
+        "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n"
         "➡️ **Price** - 5,000 ks\n"
         "⏰ **Delivery time** - within 12 hours\n\n"
-        "👉 ၁၂ နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။\n\n"
-        "ဆက်သွယ်ဝယ်ယူရန်နှင့် Resell ယူရန်\n👉 @kokowphyo"
+        "👉 12 နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။
+ရောက်လာတဲ့အခါ Join ကို နှိပ်ပြီးတော့ Pro Features အကုန်နီးပါး သုံးလိုရပါပြီ။\n\n"
+        "မိမိအနေနဲ့ Canva Edu account မဝယ်ယူခင်၊ အရင်ဆုံး Canva မှာ အကောင့်အရင်ဖွင့်ထားဖို လိုအပ်ပါတယ်။
+ဝယ်ယူတဲ့အခါမှာ မိမိ Canva အကောင့်ဖွင့်ထားတဲ့ Email မဟုတ်ဘဲ အခြား Email မှားပြီးပိုရင်တော့ တာဝန်မယူပါဘူးခင်ဗျ။\n\n"
+        "✅ **Resell ယူလိုသူများ** အနေနဲ့ Admin ဆီမှာ လာရောက်စုံစမ်းဝယ်ယူလို့ရပါပြီ\n\n"
+        "ဆက်သွယ်ဝယ်ယူရန်\n👉 @kokowphyo"
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("💳 အခုဝယ်မည် / ငွေလွှဲပြေစာ ပို့မည်", callback_data="buy_now"))
@@ -117,7 +131,7 @@ def canva_detail(call):
 def refresh_menu(message):
     send_menu(message)
 
-# Admin Command
+# Admin Command (Send Key)
 @bot.message_handler(commands=['sendkey'])
 def send_key_to_user(message):
     if str(message.chat.id) == ADMIN_ID:
@@ -131,14 +145,14 @@ def send_key_to_user(message):
         except:
             bot.reply_to(message, "❌ ပုံစံမှားနေပါသည်။ /sendkey [ID] [စာသား]")
 
-# Handling Text
+# Text Handler
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_all_text(message):
     if str(message.chat.id) != ADMIN_ID:
         bot.send_message(message.chat.id, "📩 လူကြီးမင်း ပို့ထားသော Message ကို လက်ခံရရှိပါသည်။ Admin မှ မကြာမီ ပြန်လည် ဆက်သွယ်ပေးပါမည်။")
         bot.send_message(ADMIN_ID, f"📩 **Message အသစ်**\nFrom: `{message.chat.id}`\nText: {message.text}", parse_mode='Markdown')
 
-# Handling Photo
+# Photo Handler
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
     bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက ပစ္စည်း ပို့ပေးပါမည်။")
