@@ -28,7 +28,7 @@ CANVA_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/
 def send_menu(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
-    item2 = types.KeyboardButton('💳 ငွေလွှဲ အကောင့်များ')
+    item2 = types.KeyboardButton('💳 ငွေလွှဲ အကောင့်')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
     item4 = types.KeyboardButton('🔄 Refresh (ပြန်စတင်ရန်)')
     
