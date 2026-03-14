@@ -8,7 +8,7 @@ from threading import Thread
 app = Flask('')
 @app.route('/')
 def home():
-    return "Digital Shop Bot is alive!"
+    return "AT Digital Store Bot is alive!"
 
 def run():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
@@ -22,19 +22,20 @@ TOKEN = '8741651961:AAH0uuIJ10pMPveeI27f7hU_WjIGXbbLZUY'
 ADMIN_ID = '6343475200' 
 bot = telebot.TeleBot(TOKEN)
 
-# Canva ပုံ Link
+# ပုံ Link များ
+LOGO_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/Logo.jpg?raw=true"
 CANVA_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/1.jpg?raw=true"
 
 def send_menu(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
-    item2 = types.KeyboardButton('💳 ငွေလွှဲ အကောင့်')
+    item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
     item4 = types.KeyboardButton('🔄 Refresh (ပြန်စတင်ရန်)')
     
     markup.add(item1)
     markup.add(item2, item3)
-    markup.add(item4) # Refresh ခလုတ်ကို အောက်ဆုံးမှာ ထားပေးထားပါတယ်
+    markup.add(item4)
     
     welcome_text = "✨ **AT Digital Store** မှ ကြိုဆိုပါတယ်။\n\nလူကြီးမင်း ဝယ်ယူလိုသော ဝန်ဆောင်မှုများကို အောက်ပါ Menu မှတစ်ဆင့် စိတ်ကြိုက် ရွေးချယ်နိုင်ပါပြီ ခင်ဗျာ။"
     bot.send_message(message.chat.id, welcome_text, reply_markup=markup, parse_mode='Markdown')
@@ -43,21 +44,27 @@ def send_menu(message):
 def start(message):
     send_menu(message)
 
-# 🛍 ပစ္စည်းများကြည့်ရန်
+# 🛍 ပစ္စည်းများကြည့်ရန် (Logo ပုံနှင့်အတူပြသခြင်း)
 @bot.message_handler(func=lambda message: message.text == '🛍 ပစ္စည်းများကြည့်ရန်')
 def show_products(message):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text="🎨 Canva Pro (Edu) ဝယ်ယူရန်", callback_data="prod_canva"))
-    bot.send_message(message.chat.id, "📦 **လက်ရှိရရှိနိုင်သော ဝန်ဆောင်မှုများ-**", reply_markup=markup, parse_mode='Markdown')
+    
+    product_text = "✨ **AT Digital Store** မှ လက်ရှိ ရရှိနိုင်သော ဝန်ဆောင်မှုများ"
+    
+    try:
+        bot.send_photo(message.chat.id, LOGO_IMAGE, caption=product_text, reply_markup=markup, parse_mode='Markdown')
+    except:
+        bot.send_message(message.chat.id, product_text, reply_markup=markup, parse_mode='Markdown')
 
 # Canva Detail ပြသခြင်း
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
-        "🫥 **Canva EDU account (1 Year)**\n\n"
+        "🎨 **Canva EDU account (1 Year)**\n\n"
         "➡️ **Price** - 5,000 ks\n"
         "⏰ **Delivery time** - within 12 hours\n\n"
-        "👉 12 နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။ "
+        "👉 ၁၂ နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။ "
         "ရောက်လာတဲ့အခါ Join ကို နှိပ်ပြီးတော့ Pro Features အကုန်နီးပါး သုံးလို့ရပါပြီ။\n\n"
         "👉 မိမိအနေနဲ့ Canva Edu account မဝယ်ယူခင်၊ အရင်ဆုံး Canva မှာ အကောင့်အရင်ဖွင့်ထားဖို့ လိုအပ်ပါတယ်။ "
         "ဝယ်ယူတဲ့အခါမှာ မိမိ Canva အကောင့်ဖွင့်ထားတဲ့ Email မဟုတ်ဘဲ အခြား Email မှားပြီးပို့ရင်တော့ တာဝန်မယူပါဘူးခင်ဗျ။\n\n"
@@ -97,7 +104,7 @@ def contact_admin(message):
     bot.send_message(message.chat.id, "🔗 **Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ရန်**\n👉 @kokowphyo")
 
 # 🔄 Refresh ခလုတ် Logic
-@bot.message_handler(func=lambda message: message.text == '🔄 Refresh / ပြန်စတင်ရန်')
+@bot.message_handler(func=lambda message: message.text == '🔄 Refresh (ပြန်စတင်ရန်)')
 def refresh_menu(message):
     send_menu(message)
 
@@ -123,7 +130,7 @@ def handle_all_text(message):
 
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
-    bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက (၁၂) နာရီအတွင်း ပစ္စည်း ပို့ပေးပါမည်။")
+    bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက ပစ္စည်း ပို့ပေးပါမည်။")
     bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(ADMIN_ID, f"📸 **ငွေလွှဲပြေစာ ရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`", parse_mode='Markdown')
 
