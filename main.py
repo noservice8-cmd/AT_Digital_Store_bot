@@ -22,17 +22,19 @@ TOKEN = '8741651961:AAH0uuIJ10pMPveeI27f7hU_WjIGXbbLZUY'
 ADMIN_ID = '6343475200' 
 bot = telebot.TeleBot(TOKEN)
 
-# Canva ပုံ Link (ဆရာပေးထားတဲ့ပုံကို သုံးထားပါတယ်)
+# Canva ပုံ Link
 CANVA_IMAGE = "https://github.com/noservice8-cmd/AT_Digital_Store_bot/blob/main/1.jpg?raw=true"
 
 def send_menu(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    item1 = types.KeyboardButton('🛍 ပစ္စည်းများ ကြည့်ရန်')
+    item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
     item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
+    item4 = types.KeyboardButton('🔄 Refresh / ပြန်စတင်ရန်')
     
     markup.add(item1)
     markup.add(item2, item3)
+    markup.add(item4) # Refresh ခလုတ်ကို အောက်ဆုံးမှာ ထားပေးထားပါတယ်
     
     welcome_text = "✨ **AT Digital Store** မှ ကြိုဆိုပါတယ်။\n\nလူကြီးမင်း ဝယ်ယူလိုသော ဝန်ဆောင်မှုများကို အောက်ပါ Menu မှတစ်ဆင့် စိတ်ကြိုက် ရွေးချယ်နိုင်ပါပြီ ခင်ဗျာ။"
     bot.send_message(message.chat.id, welcome_text, reply_markup=markup, parse_mode='Markdown')
@@ -41,15 +43,14 @@ def send_menu(message):
 def start(message):
     send_menu(message)
 
-# ပစ္စည်းစာရင်း
-@bot.message_handler(func=lambda message: message.text == '🛍 ပစ္စည်းများ ကြည့်ရန်')
+# 🛍 ပစ္စည်းများကြည့်ရန်
+@bot.message_handler(func=lambda message: message.text == '🛍 ပစ္စည်းများကြည့်ရန်')
 def show_products(message):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text="🎨 Canva Pro (Edu) ဝယ်ယူရန်", callback_data="prod_canva"))
-    
     bot.send_message(message.chat.id, "📦 **လက်ရှိရရှိနိုင်သော ဝန်ဆောင်မှုများ-**", reply_markup=markup, parse_mode='Markdown')
 
-# Canva Detail (ပုံနှင့် စာသား တွဲပို့ခြင်း)
+# Canva Detail ပြသခြင်း
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
@@ -70,24 +71,35 @@ def canva_detail(call):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("💳 အခုဝယ်မည် / ငွေလွှဲပြေစာ ပို့မည်", callback_data="buy_now"))
     
-    # ပုံကို အရင်ပို့ပြီး စာသားကို Caption အနေနဲ့ ထည့်ထားပါတယ်
     try:
         bot.send_photo(call.message.chat.id, CANVA_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
     except:
-        # ပုံ Link မှာ ပြဿနာရှိခဲ့ရင် စာသားပဲ ပို့ပေးမှာပါ
         bot.send_message(call.message.chat.id, detail_text, reply_markup=markup, parse_mode='Markdown')
 
+# 💳 ငွေလွှဲအကောင့်များ
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_now')
-def buy_info(call):
-    payment_info = (
-        "💳 **ငွေလွှဲရန် အကောင့်များ**\n\n"
-        "💰 **KPay / Wave**\n"
+@bot.message_handler(func=lambda message: message.text == '💳 ငွေလွှဲအကောင့်များ')
+def payment_info(message):
+    chat_id = message.chat.id if hasattr(message, 'chat') else message.message.chat.id
+    pay_text = (
+        "💳 **ငွေလွှဲရန် အကောင့်**\n\n"
+        "💰 **KPay**\n"
         "📱 **09 689 094 369**\n"
         "👤 **Daw Ohn Myint**\n\n"
         "⚠️ **Note:** တွင် 'ငွေပေးချေခြင်း' ဟုသာ ရေးပေးပါ။\n\n"
         "✅ ငွေလွှဲပြီးပါက **ငွေလွှဲပြေစာ (Screenshot)** ကို ဤ Bot ထဲသို့ တိုက်ရိုက် ပို့ပေးထားပါခင်ဗျာ။"
     )
-    bot.send_message(call.message.chat.id, payment_info, parse_mode='Markdown')
+    bot.send_message(chat_id, pay_text, parse_mode='Markdown')
+
+# 👨‍💻 Admin ဆက်သွယ်ရန်
+@bot.message_handler(func=lambda message: message.text == '👨‍💻 Admin ဆက်သွယ်ရန်')
+def contact_admin(message):
+    bot.send_message(message.chat.id, "🔗 **Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ရန်**\n👉 @kokowphyo")
+
+# 🔄 Refresh ခလုတ် Logic
+@bot.message_handler(func=lambda message: message.text == '🔄 Refresh / ပြန်စတင်ရန်')
+def refresh_menu(message):
+    send_menu(message)
 
 # Admin က ပစ္စည်းပြန်ပို့ရန် Command
 @bot.message_handler(commands=['sendkey'])
@@ -105,14 +117,9 @@ def send_key_to_user(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_all_text(message):
-    if message.text == '💳 ငွေလွှဲအကောင့်များ':
-        bot.send_message(message.chat.id, "💳 **ငွေလွှဲရန်အကောင့်**\n\n💰 Kpay / Wave\n📱 09 689 094 369\n👤 Daw Ohn Myint")
-    elif message.text == '👨‍💻 Admin ဆက်သွယ်ရန်':
-        bot.send_message(message.chat.id, "🔗 **Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ရန်**\n👉 @kokowphyo")
-    else:
-        if str(message.chat.id) != ADMIN_ID:
-            bot.send_message(message.chat.id, "📩 လူကြီးမင်း ပို့ထားသော Message ကို လက်ခံရရှိပါသည်။ Admin မှ မကြာမီ ပြန်လည် ဆက်သွယ်ပေးပါမည်။")
-            bot.send_message(ADMIN_ID, f"📩 **Message အသစ်**\nFrom: `{message.chat.id}`\nText: {message.text}", parse_mode='Markdown')
+    if str(message.chat.id) != ADMIN_ID:
+        bot.send_message(message.chat.id, "📩 လူကြီးမင်း ပို့ထားသော Message ကို လက်ခံရရှိပါသည်။ Admin မှ မကြာမီ ပြန်လည် ဆက်သွယ်ပေးပါမည်။")
+        bot.send_message(ADMIN_ID, f"📩 **Message အသစ်**\nFrom: `{message.chat.id}`\nText: {message.text}", parse_mode='Markdown')
 
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
