@@ -68,7 +68,7 @@ def show_products(message):
     except:
         bot.send_message(message.chat.id, product_text, reply_markup=markup, parse_mode='Markdown')
 
-# 🤝 Resell လုပ်လိုသူများ (Logo ပုံနှင့်အတူပြသခြင်း)
+# 🤝 Resell လုပ်လိုသူများ
 @bot.message_handler(func=lambda message: message.text == '🤝 Resell လုပ်လိုသူများ')
 def resell_info(message):
     resell_text = "🤝 **Resell လုပ်လိုသူများအတွက်**\n\nဝန်ဆောင်မှုများကို တစ်ဆင့်ပြန်လည်ရောင်းချလိုပါက Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ပေးပါရန်။\n\n🔗 Admin: @kokowphyo"
@@ -104,17 +104,17 @@ def contact_admin(message):
     except:
         bot.send_message(message.chat.id, admin_text, parse_mode='Markdown')
 
-# Canva Detail
+# Canva Detail (ဒီနေရာမှာ စာကြောင်းပြတ်နေတာကို ပြင်ထားပါတယ်)
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
         "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n"
         "➡️ **Price** - 5,000 ks\n"
         "⏰ **Delivery time** - within 12 hours\n\n"
-        "👉 12 နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။
-ရောက်လာတဲ့အခါ Join ကို နှိပ်ပြီးတော့ Pro Features အကုန်နီးပါး သုံးလိုရပါပြီ။\n\n"
-        "မိမိအနေနဲ့ Canva Edu account မဝယ်ယူခင်၊ အရင်ဆုံး Canva မှာ အကောင့်အရင်ဖွင့်ထားဖို လိုအပ်ပါတယ်။
-ဝယ်ယူတဲ့အခါမှာ မိမိ Canva အကောင့်ဖွင့်ထားတဲ့ Email မဟုတ်ဘဲ အခြား Email မှားပြီးပိုရင်တော့ တာဝန်မယူပါဘူးခင်ဗျ။\n\n"
+        "👉 ၁၂ နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။ "
+        "ရောက်လာတဲ့အခါ Join ကို နှိပ်ပြီးတော့ Pro Features အကုန်နီးပါး သုံးလို့ရပါပြီ။\n\n"
+        "👉 မိမိအနေနဲ့ Canva Edu account မဝယ်ယူခင်၊ အရင်ဆုံး Canva မှာ အကောင့်အရင်ဖွင့်ထားဖို့ လိုအပ်ပါတယ်။ "
+        "ဝယ်ယူတဲ့အခါမှာ မိမိ Canva အကောင့်ဖွင့်ထားတဲ့ Email မဟုတ်ဘဲ အခြား Email မှားပြီးပို့ရင်တော့ တာဝန်မယူပါဘူးခင်ဗျ။\n\n"
         "✅ **Resell ယူလိုသူများ** အနေနဲ့ Admin ဆီမှာ လာရောက်စုံစမ်းဝယ်ယူလို့ရပါပြီ\n\n"
         "ဆက်သွယ်ဝယ်ယူရန်\n👉 @kokowphyo"
     )
