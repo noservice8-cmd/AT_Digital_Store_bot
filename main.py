@@ -23,10 +23,10 @@ TOKEN = os.environ.get('BOT_TOKEN')
 ADMIN_ID = os.environ.get('ADMIN_ID', '6343475200')
 bot = telebot.TeleBot(TOKEN)
 
-# ၃။ ပုံ Link များ (Admin.jpg ကို raw link ပြောင်းထည့်ပေးပါ)
+# ၃။ ပုံ Link များ
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
-ADMIN_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Admin.jpg" # GitHub မှာ Admin.jpg အမည်နဲ့ တင်ထားရပါမယ်
+ADMIN_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Admin.jpg"
 
 # ၄။ Keyboard Menu Function
 def get_main_menu():
@@ -73,7 +73,6 @@ def contact_admin(message):
         "🔗 Admin Account: @kokowphyo"
     )
     try:
-        # Admin.jpg ကို သုံးထားပါတယ်
         bot.send_photo(message.chat.id, ADMIN_IMAGE, caption=admin_text, parse_mode='Markdown')
     except:
         bot.send_message(message.chat.id, admin_text, parse_mode='Markdown')
@@ -98,14 +97,12 @@ def resell_info(message):
 def refresh_menu(message):
     send_menu(message)
 
-# ပြေစာ (Photo) ပို့တာကို Admin ဆီ Forward လုပ်ပေးခြင်း
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
     bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက ပစ္စည်း ပို့ပေးပါမည်။")
     bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(ADMIN_ID, f"📸 **ငွေလွှဲပြေစာ ရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`", parse_mode='Markdown')
 
-# Admin စာပို့တဲ့ Command (/sendkey)
 @bot.message_handler(commands=['sendkey'])
 def send_key_to_user(message):
     if str(message.chat.id) == ADMIN_ID:
@@ -118,10 +115,8 @@ def send_key_to_user(message):
         except:
             bot.reply_to(message, "❌ ပုံစံ- /sendkey [ID] [စာသား]")
 
-# တိုက်ရိုက် စာရိုက်ပို့ပါက ပြန်စာပေးပို့ခြင်း (Admin ဆီ Noti မသွားပါ)
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_direct_text(message):
-    # Admin ရိုက်တဲ့ စာသားဆိုရင်တော့ ဘာမှပြန်မပြောပါ (Error မတက်အောင်)
     if str(message.chat.id) == ADMIN_ID:
         return
     
@@ -131,10 +126,17 @@ def handle_direct_text(message):
     )
     bot.send_message(message.chat.id, warning_text, reply_markup=get_main_menu())
 
-# Inline Callback (Canva Pro)
+# --- ပြင်ဆင်လိုက်သည့်အပိုင်း (Canva Detail) ---
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
-    detail_text = "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n➡️ **Price** - 5,000 ks\nဆက်သွယ်ဝယ်ယူရန် 👉 @kokowphyo"
+    detail_text = (
+        "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n"
+        "➡️ **Price** - 5,000 ks\n"
+        "⏰ **Delivery time** - within 12 hours\n\n"
+        "👉 ၁၂ နာရီအတွင်း Email Invite ရောက်လာပါလိမ့်မယ်။ ရောက်လာတဲ့အခါ Join ကို နှိပ်ပြီးတော့ Pro Features အကုန်နီးပါး သုံးလိုရပါပြီ။\n\n"
+        "👉 မိမိအနေနဲ့ Canva Edu account မဝယ်ယူခင်၊ အရင်ဆုံး Canva မှာ အကောင့်အရင်ဖွင့်ထားဖို လိုအပ်ပါတယ်။ ဝယ်ယူတဲ့အခါမှာ မိမိ Canva အကောင့်ဖွင့်ထားတဲ့ Email မဟုတ်ဘဲ အခြား Email မှားပြီးပိုရင်တော့ တာဝန်မယူပါဘူးခင်ဗျ။\n\n"
+        "✅ **Reseller (ပြန်လည်ရောင်းချလိုသူများ)** အနေနဲ့ Admin ဆီမှာ လာရောက်စုံစမ်းဝယ်ယူလို့ရပါပြီ။"
+    )
     bot.send_photo(call.message.chat.id, CANVA_IMAGE, caption=detail_text, parse_mode='Markdown')
 
 if __name__ == "__main__":
