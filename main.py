@@ -11,22 +11,27 @@ def home():
     return "AT Digital Store Bot is alive!"
 
 def run():
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    # Render အတွက် Port ကို environment variable ကနေ ယူမယ်
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
 
 def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# ၂။ Bot Setup
-TOKEN = '8741651961:AAH0uuIJ10pMPveeI27f7hU_WjIGXbbLZUY'
-ADMIN_ID = '6343475200' 
+# ၂။ Bot Setup (Environment Variables သုံးထားပါသည်)
+# Token ကို အောက်မှာ တိုက်ရိုက်မရေးဘဲ Render ရဲ့ Settings ထဲမှာ သွားထည့်ပေးရပါမယ်
+TOKEN = os.environ.get('BOT_TOKEN') 
+ADMIN_ID = os.environ.get('ADMIN_ID', '6343475200') # Admin ID ကိုလည်း Variable ပြောင်းထားပေးပါတယ်
+
 bot = telebot.TeleBot(TOKEN)
 
-# ၃။ ပုံ Link များ (Raw GitHub Links)
+# ၃။ ပုံ Link များ
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 
-# ၄။ ပင်မ Menu ပြသသည့် Function
+# --- [ကျန်တဲ့ Function တွေက အပေါ်ကအတိုင်းပဲ သုံးလို့ရပါတယ်] ---
+
 def send_menu(message):
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
@@ -50,25 +55,20 @@ def send_menu(message):
     except:
         bot.send_message(message.chat.id, welcome_text, reply_markup=markup, parse_mode='Markdown')
 
-# /start သို့မဟုတ် /refresh
 @bot.message_handler(commands=['start', 'refresh'])
 def start(message):
     send_menu(message)
 
-# 🛍 ပစ္စည်းများကြည့်ရန်
 @bot.message_handler(func=lambda message: message.text == '🛍 ပစ္စည်းများကြည့်ရန်')
 def show_products(message):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text="🎨 Canva Pro (Edu) ဝယ်ယူရန်", callback_data="prod_canva"))
-    
     product_text = "✨ **AT Digital Store** မှ လက်ရှိ ရရှိနိုင်သော ဝန်ဆောင်မှုများ"
-    
     try:
         bot.send_photo(message.chat.id, LOGO_IMAGE, caption=product_text, reply_markup=markup, parse_mode='Markdown')
     except:
         bot.send_message(message.chat.id, product_text, reply_markup=markup, parse_mode='Markdown')
 
-# 🤝 Resell လုပ်လိုသူများ
 @bot.message_handler(func=lambda message: message.text == '🤝 Resell လုပ်လိုသူများ')
 def resell_info(message):
     resell_text = "🤝 **Resell လုပ်လိုသူများအတွက်**\n\nဝန်ဆောင်မှုများကို တစ်ဆင့်ပြန်လည်ရောင်းချလိုပါက Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ပေးပါရန်။\n\n🔗 Admin: @kokowphyo"
@@ -77,7 +77,6 @@ def resell_info(message):
     except:
         bot.send_message(message.chat.id, resell_text, parse_mode='Markdown')
 
-# 💳 ငွေလွှဲအကောင့်များ
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_now')
 @bot.message_handler(func=lambda message: message.text == '💳 ငွေလွှဲအကောင့်များ')
 def payment_info(message):
@@ -95,7 +94,6 @@ def payment_info(message):
     except:
         bot.send_message(chat_id, pay_text, parse_mode='Markdown')
 
-# 👨‍💻 Admin ဆက်သွယ်ရန်
 @bot.message_handler(func=lambda message: message.text == '👨‍💻 Admin ဆက်သွယ်ရန်')
 def contact_admin(message):
     admin_text = "🔗 **Admin နှင့် တိုက်ရိုက်ဆက်သွယ်ရန်**\n👉 @kokowphyo"
@@ -104,7 +102,6 @@ def contact_admin(message):
     except:
         bot.send_message(message.chat.id, admin_text, parse_mode='Markdown')
 
-# Canva Detail (ဒီနေရာမှာ စာကြောင်းပြတ်နေတာကို ပြင်ထားပါတယ်)
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
@@ -120,18 +117,15 @@ def canva_detail(call):
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("💳 အခုဝယ်မည် / ငွေလွှဲပြေစာ ပို့မည်", callback_data="buy_now"))
-    
     try:
         bot.send_photo(call.message.chat.id, CANVA_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
     except:
         bot.send_message(call.message.chat.id, detail_text, reply_markup=markup, parse_mode='Markdown')
 
-# 🔄 Refresh
 @bot.message_handler(func=lambda message: message.text == '🔄 Refresh (ပြန်စတင်ရန်)')
 def refresh_menu(message):
     send_menu(message)
 
-# Admin Command (Send Key)
 @bot.message_handler(commands=['sendkey'])
 def send_key_to_user(message):
     if str(message.chat.id) == ADMIN_ID:
@@ -145,14 +139,12 @@ def send_key_to_user(message):
         except:
             bot.reply_to(message, "❌ ပုံစံမှားနေပါသည်။ /sendkey [ID] [စာသား]")
 
-# Text Handler
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_all_text(message):
     if str(message.chat.id) != ADMIN_ID:
         bot.send_message(message.chat.id, "📩 လူကြီးမင်း ပို့ထားသော Message ကို လက်ခံရရှိပါသည်။ Admin မှ မကြာမီ ပြန်လည် ဆက်သွယ်ပေးပါမည်။")
         bot.send_message(ADMIN_ID, f"📩 **Message အသစ်**\nFrom: `{message.chat.id}`\nText: {message.text}", parse_mode='Markdown')
 
-# Photo Handler
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
     bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက ပစ္စည်း ပို့ပေးပါမည်။")
