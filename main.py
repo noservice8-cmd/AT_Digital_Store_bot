@@ -84,7 +84,7 @@ def payment_info(message):
         "💰 **KPay**\n"
         "📱 **09 689 094 369**\n"
         "👤 **Daw Ohn Myint**\n\n"
-        "✅ ငွေလွှဲပြီးပါက **ငွေလွှဲပြေစာ (Screenshot)** ကို ပို့ပေးထားပါခင်ဗျာ။"
+        "✅ ငွေလွှဲပြီးပါက **ငွေလွှဲပြေစာ (Screenshot)** နှင့် Gmail ကို ပို့ပေးထားပါခင်ဗျာ။"
     )
     bot.send_photo(message.chat.id, LOGO_IMAGE, caption=pay_text, parse_mode='Markdown')
 
