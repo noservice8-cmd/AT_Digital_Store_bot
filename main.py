@@ -24,11 +24,9 @@ def keep_alive():
 # ==========================================
 # ၂။ Bot Setup & Configuration
 # ==========================================
-# Render Environment Variables မှ Token နှင့် Admin ID ကို လှမ်းယူပါမည်
 TOKEN = os.environ.get('BOT_TOKEN') 
 ADMIN_ID = os.environ.get('ADMIN_ID', '6343475200')
 
-# Token မရှိပါက Error မတက်စေရန် စစ်ဆေးခြင်း
 if not TOKEN:
     print("WARNING: BOT_TOKEN is missing. Please set it in Render Environment Variables.")
     bot = None
@@ -47,7 +45,6 @@ HOUSEWIFE_APP_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digit
 # ၄။ Keyboard Menu Function
 # ==========================================
 def get_main_menu():
-    # is_persistent=True ထည့်ထားသဖြင့် ခလုတ်များ အမြဲပေါ်နေမည်
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, is_persistent=True)
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
     item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
@@ -170,7 +167,6 @@ def handle_direct_text(message):
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_housewife')
 def housewife_detail(call):
     if not is_bot_active(): return
-    # ခလုတ် Loading လည်နေခြင်းကို ရပ်ပေးသော အပိုင်း
     bot.answer_callback_query(call.id) 
 
     detail_text = (
@@ -190,25 +186,20 @@ def housewife_detail(call):
     )
     markup = types.InlineKeyboardMarkup()
     
-    # ခလုတ် (၁) ဝယ်ယူမည် (အပေါ်ဆုံး)
     btn_buy = types.InlineKeyboardButton(text="💳 ဝယ်ယူမည်", callback_data="buy_housewife")
-    
-    # ခလုတ် (၂) App Link (အောက်ပါ url နေရာတွင် ဆရာ့ App Link အစစ်ကို ပြောင်းထည့်ပါ)
+    # ဆရာပေးထားသော App Link အသစ် ထည့်သွင်းထားပါသည်
     btn_app = types.InlineKeyboardButton(text="📥 App ဒေါင်းလုဒ်ဆွဲရန်", url="https://drive.google.com/file/d/15lZC6JSUMBvlFV9oLtMaWW7olH0pfVcG/view?usp=drive_link")
+    btn_guide = types.InlineKeyboardButton(text="📖 အသုံးပြုနည်း လမ်းညွှန်", url="https://www.youtube.com/@FuturePlan")
     
-    # ခလုတ် (၃) YouTube လမ်းညွှန် (အောက်ပါ url နေရာတွင် ဆရာ့ YouTube Link အစစ်ကို ပြောင်းထည့်ပါ)
-    btn_guide = types.InlineKeyboardButton(text="📖 အသုံးပြုနည်း လမ်းညွှန်", url="https://youtube.com/your-video-link")
-    
-    # ခလုတ်များကို Menu ပေါ်တွင် နေရာချခြင်း
     markup.add(btn_buy)
-    markup.row(btn_app, btn_guide) # App ခလုတ်နှင့် လမ်းညွှန်ခလုတ်ကို တစ်တန်းတည်းထားခြင်း
+    markup.row(btn_app, btn_guide) 
     
     bot.send_photo(call.message.chat.id, HOUSEWIFE_APP_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_housewife')
 def buy_housewife_step(call):
     if not is_bot_active(): return
-    bot.answer_callback_query(call.id) # Loading ရပ်ရန်
+    bot.answer_callback_query(call.id) 
 
     buy_text = (
         "💳 **'အိမ်ရှင်မ' App ဝယ်ယူရန် အဆင့်ဆင့်**\n\n"
@@ -225,7 +216,7 @@ def buy_housewife_step(call):
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     if not is_bot_active(): return
-    bot.answer_callback_query(call.id) # Loading ရပ်ရန်
+    bot.answer_callback_query(call.id)
 
     detail_text = (
         "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n"
@@ -241,10 +232,7 @@ def canva_detail(call):
 # ၇။ Program စတင်သည့် အပိုင်း (Main Execution)
 # ==========================================
 if __name__ == "__main__":
-    # Render ၏ Port Timeout မဖြစ်စေရန် Flask ကို အရင်စတင်ပါမည်
     keep_alive()
-    
-    # Bot Token မှန်ကန်ပါက Polling စတင်ပါမည်
     if bot:
         print("Bot is successfully running...")
         bot.infinity_polling(timeout=20, long_polling_timeout=10)
