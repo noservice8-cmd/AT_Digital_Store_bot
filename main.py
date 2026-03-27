@@ -19,7 +19,7 @@ def keep_alive():
     t.start()
 
 # ၂။ Bot Setup
-TOKEN = os.environ.get('BOT_TOKEN') 
+TOKEN = os.environ.get('BOT_TOKEN', '8034562896:AAGexPn-b1QUIvNBehUzBeDW7lYcqbuuZWU') 
 ADMIN_ID = os.environ.get('ADMIN_ID', '6343475200')
 bot = telebot.TeleBot(TOKEN)
 
@@ -27,10 +27,13 @@ bot = telebot.TeleBot(TOKEN)
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 ADMIN_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Admin.jpg"
+# အိမ်ရှင်မ App အတွက် သီးသန့်ပုံရှိပါက ဤနေရာတွင် Link ပြောင်းထည့်နိုင်ပါသည်။ လောလောဆယ် Logo ကိုသာ သုံးထားပါသည်။
+HOUSEWIFE_IMAGE = LOGO_IMAGE 
 
 # ၄။ Keyboard Menu Function
 def get_main_menu():
-    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    # ခလုတ်များ အမြဲပေါ်နေစေရန် is_persistent=True ထည့်ထားပါသည်
+    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, is_persistent=True)
     item1 = types.KeyboardButton('🛍 ပစ္စည်းများကြည့်ရန်')
     item2 = types.KeyboardButton('💳 ငွေလွှဲအကောင့်များ')
     item3 = types.KeyboardButton('👨‍💻 Admin ဆက်သွယ်ရန်')
@@ -61,6 +64,8 @@ def start(message):
 @bot.message_handler(func=lambda message: message.text == '🛍 ပစ္စည်းများကြည့်ရန်')
 def show_products(message):
     markup = types.InlineKeyboardMarkup()
+    # ယခင် Canva ကို မဖျက်ဘဲ အိမ်ရှင်မ App ကို ထပ်တိုးထားပါသည်
+    markup.add(types.InlineKeyboardButton(text="🌸 'အိမ်ရှင်မ' ဘတ်ဂျက် App ဝယ်ယူရန်", callback_data="prod_housewife"))
     markup.add(types.InlineKeyboardButton(text="🎨 Canva Pro (Edu) ဝယ်ယူရန်", callback_data="prod_canva"))
     product_text = "✨ **AT Digital Store** မှ လက်ရှိ ရရှိနိုင်သော ဝန်ဆောင်မှုများ"
     bot.send_photo(message.chat.id, LOGO_IMAGE, caption=product_text, reply_markup=markup, parse_mode='Markdown')
@@ -84,7 +89,7 @@ def payment_info(message):
         "💰 **KPay**\n"
         "📱 **09 689 094 369**\n"
         "👤 **Daw Ohn Myint**\n\n"
-        "✅ ငွေလွှဲပြီးပါက **ငွေလွှဲပြေစာ (Screenshot)** နှင့် Gmail ကို ပို့ပေးထားပါခင်ဗျာ။"
+        "✅ ငွေလွှဲပြီးပါက **ငွေလွှဲပြေစာ (Screenshot)** နှင့် Gmail (သို့) လိုအပ်သည့်အချက်အလက်များကို ပို့ပေးထားပါခင်ဗျာ။"
     )
     bot.send_photo(message.chat.id, LOGO_IMAGE, caption=pay_text, parse_mode='Markdown')
 
@@ -99,21 +104,24 @@ def refresh_menu(message):
 
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
-    bot.send_message(message.chat.id, "✅ ပြေစာ လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက ပစ္စည်း ပို့ပေးပါမည်။")
+    bot.send_message(message.chat.id, "✅ ပြေစာ (သို့) ပုံကို လက်ခံရရှိပါသည်။ Admin စစ်ဆေးပြီးပါက အမြန်ဆုံး အကြောင်းပြန်ပေးပါမည်။")
     bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
-    bot.send_message(ADMIN_ID, f"📸 **ငွေလွှဲပြေစာ ရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`", parse_mode='Markdown')
+    bot.send_message(ADMIN_ID, f"📸 **ဝယ်သူထံမှ ပုံရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`\nအမည်: {message.from_user.first_name}", parse_mode='Markdown')
 
 @bot.message_handler(commands=['sendkey'])
 def send_key_to_user(message):
     if str(message.chat.id) == ADMIN_ID:
         try:
             args = message.text.split(maxsplit=2)
+            if len(args) < 3:
+                bot.reply_to(message, "❌ ပုံစံမှားနေပါသည်။ /sendkey [ID] [စာသား] ဟု ရိုက်ပါ ဆရာ။")
+                return
             target_user_id = args[1]
             content = args[2]
             bot.send_message(target_user_id, f"✅ **ပစ္စည်းရောက်ရှိလာပါပြီ**\n\n📩 အချက်အလက်: `{content}`", parse_mode='Markdown')
             bot.reply_to(message, "✅ ပို့ဆောင်ပြီးပါပြီ။")
         except:
-            bot.reply_to(message, "❌ ပုံစံ- /sendkey [ID] [စာသား]")
+            bot.reply_to(message, "❌ အမှားအယွင်း ဖြစ်သွားပါသည်။ ပုံစံ- /sendkey [ID] [စာသား]")
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_direct_text(message):
@@ -126,7 +134,48 @@ def handle_direct_text(message):
     )
     bot.send_message(message.chat.id, warning_text, reply_markup=get_main_menu())
 
-# --- ပြင်ဆင်လိုက်သည့်အပိုင်း (Canva Detail) ---
+
+# ==========================================
+# Callback Query Handlers (Products Detail)
+# ==========================================
+
+# --- ၁။ အိမ်ရှင်မ App အပိုင်း (အသစ်ထည့်ထားသည်) ---
+@bot.callback_query_handler(func=lambda call: call.data == 'prod_housewife')
+def housewife_detail(call):
+    detail_text = (
+        "🌸 **'အိမ်ရှင်မ' ဘတ်ဂျက် App** 🌸\n\n"
+        "မိသားစုရဲ့ လစဉ် ဝင်ငွေ၊ ထွက်ငွေတွေကို စာအုပ်ထဲမှာ ရေးမှတ်နေရတာ ရှုပ်ထွေးနေပြီလား? "
+        "'အိမ်ရှင်မ' App လေးက သင့်ရဲ့ ငွေကြေးစီမံခန့်ခွဲမှုတွေကို အလွယ်ကူဆုံးနဲ့ အရှင်းလင်းဆုံး ဖြစ်အောင် ကူညီပေးပါလိမ့်မယ်။\n\n"
+        "✨ **ဘာတွေ လုပ်ဆောင်ပေးနိုင်လဲ?**\n"
+        "💰 ဝင်ငွေ/ထွက်ငွေ အလွယ်တကူ မှတ်သားခြင်း\n"
+        "📊 Pie Chart များဖြင့် ရှင်းလင်းစွာ ပြသခြင်း\n"
+        "🔒 PIN စနစ်ဖြင့် လုံခြုံမှုပေးခြင်း\n"
+        "✅ Offline (အင်တာနက်မလိုဘဲ) သုံးနိုင်ခြင်း\n\n"
+        "💎 **Premium Package များ:**\n"
+        "🔹 ၆ လ သက်တမ်း - ၁၀,၀၀၀ ကျပ်\n"
+        "🔹 ၁ နှစ် သက်တမ်း - ၂၀,၀၀၀ ကျပ်\n"
+        "🔹 တစ်သက်တာ (Lifetime) - ၁၀၀,၀၀၀ ကျပ်\n\n"
+        "🛒 **ဝယ်ယူရန်:** အောက်ပါ '💳 ဝယ်ယူမည်' ကို နှိပ်ပါ"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(text="💳 ဝယ်ယူမည်", callback_data="buy_housewife"))
+    bot.send_photo(call.message.chat.id, HOUSEWIFE_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
+
+@bot.callback_query_handler(func=lambda call: call.data == 'buy_housewife')
+def buy_housewife_step(call):
+    buy_text = (
+        "💳 **'အိမ်ရှင်မ' App ဝယ်ယူရန် အဆင့်ဆင့်**\n\n"
+        "၁။ မိမိဝယ်ယူလိုသော Package အတွက် ကျသင့်ငွေကို '💳 ငွေလွှဲအကောင့်များ' ခလုတ်တွင် ကြည့်၍ လွှဲပေးပါ။\n\n"
+        "၂။ ငွေလွှဲပြီးပါက အောက်ပါ အချက်အလက်များကို ဤ Bot ထံသို့ တိုက်ရိုက် ပေးပို့ပေးပါခင်ဗျာ -\n"
+        "   🔸 **ငွေလွှဲပြေစာ (Screenshot)**\n"
+        "   🔸 **အသုံးပြုမည့် Device ID**\n"
+        "   🔸 **အသုံးပြုလိုသည့်ကာလ** (ဥပမာ - ၆ လ၊ ၁ နှစ်၊ သို့မဟုတ် တစ်သက်တာ)\n\n"
+        "၃။ Admin မှ စစ်ဆေးပြီးပါက လူကြီးမင်းထံသို့ **Activation Code** အမြန်ဆုံး ပြန်လည် ပေးပို့ပေးပါမည်။"
+    )
+    bot.send_message(call.message.chat.id, buy_text, parse_mode='Markdown')
+
+
+# --- ၂။ Canva App အပိုင်း (ဆရာ့မူရင်းအတိုင်း မဖျက်ဘဲ ထားပါသည်) ---
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     detail_text = (
