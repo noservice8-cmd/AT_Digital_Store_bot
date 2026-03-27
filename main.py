@@ -39,7 +39,9 @@ else:
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 ADMIN_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Admin.jpg"
-HOUSEWIFE_APP_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/housewife_app_logo.png"
+
+# ⚠️ ပြင်ဆင်ချက် - .png အစား .jpg သို့ ပြောင်းထားပါသည် ⚠️
+HOUSEWIFE_APP_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/housewife_app_logo.jpg"
 
 # ==========================================
 # ၄။ Keyboard Menu Function
@@ -187,14 +189,18 @@ def housewife_detail(call):
     markup = types.InlineKeyboardMarkup()
     
     btn_buy = types.InlineKeyboardButton(text="💳 ဝယ်ယူမည်", callback_data="buy_housewife")
-    # ဆရာပေးထားသော App Link အသစ် ထည့်သွင်းထားပါသည်
     btn_app = types.InlineKeyboardButton(text="📥 App ဒေါင်းလုဒ်ဆွဲရန်", url="https://drive.google.com/file/d/15lZC6JSUMBvlFV9oLtMaWW7olH0pfVcG/view?usp=drive_link")
     btn_guide = types.InlineKeyboardButton(text="📖 အသုံးပြုနည်း လမ်းညွှန်", url="https://www.youtube.com/@FuturePlan")
     
     markup.add(btn_buy)
     markup.row(btn_app, btn_guide) 
     
-    bot.send_photo(call.message.chat.id, HOUSEWIFE_APP_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
+    try:
+        bot.send_photo(call.message.chat.id, HOUSEWIFE_APP_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
+    except Exception as e:
+        # ပုံမရှိပါက Error မတက်ဘဲ Logo ဖြင့် အစားထိုးပြသမည်
+        bot.send_photo(call.message.chat.id, LOGO_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
+        print(f"Image Error: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_housewife')
 def buy_housewife_step(call):
@@ -232,13 +238,9 @@ def canva_detail(call):
 # ၇။ Program စတင်သည့် အပိုင်း (Main Execution)
 # ==========================================
 if __name__ == "__main__":
-    # Render ၏ Port Timeout မဖြစ်စေရန် Flask ကို အရင်စတင်ပါမည်
     keep_alive()
-    
-    # Bot Token မှန်ကန်ပါက Polling စတင်ပါမည်
     if bot:
         print("Clearing old connections...")
-        bot.remove_webhook()  # <--- ဤစာကြောင်းလေး အသစ်ထပ်ထည့်ပေးပါဆရာ
-        
+        bot.remove_webhook()
         print("Bot is successfully running...")
         bot.infinity_polling(timeout=20, long_polling_timeout=10)
