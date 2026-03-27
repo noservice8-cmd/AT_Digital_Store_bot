@@ -41,7 +41,6 @@ else:
 LOGO_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Logo.jpg"
 CANVA_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/1.jpg"
 ADMIN_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/Admin.jpg"
-# အိမ်ရှင်မ App အတွက် ဆရာတင်ထားသော ပုံ
 HOUSEWIFE_APP_IMAGE = "https://raw.githubusercontent.com/noservice8-cmd/AT_Digital_Store_bot/main/housewife_app_logo.png"
 
 # ==========================================
@@ -71,7 +70,6 @@ def send_menu(message):
     except:
         bot.send_message(message.chat.id, welcome_text, reply_markup=get_main_menu(), parse_mode='Markdown')
 
-# Bot Active ဖြစ်မဖြစ် စစ်ဆေးသည့် Function
 def is_bot_active():
     return bot is not None
 
@@ -129,7 +127,6 @@ def refresh_menu(message):
     if not is_bot_active(): return
     send_menu(message)
 
-# ဓာတ်ပုံ (ပြေစာ) ပို့ပါက Admin ထံ Forward လုပ်ခြင်း
 @bot.message_handler(content_types=['photo'])
 def handle_receipt(message):
     if not is_bot_active(): return
@@ -137,7 +134,6 @@ def handle_receipt(message):
     bot.forward_message(ADMIN_ID, message.chat.id, message.message_id)
     bot.send_message(ADMIN_ID, f"📸 **ဝယ်သူထံမှ ပုံရောက်လာပါပြီ**\nUser ID: `{message.chat.id}`\nအမည်: {message.from_user.first_name}", parse_mode='Markdown')
 
-# Admin မှ Key ပြန်ပို့ရန် Command
 @bot.message_handler(commands=['sendkey'])
 def send_key_to_user(message):
     if not is_bot_active(): return
@@ -154,11 +150,9 @@ def send_key_to_user(message):
         except:
             bot.reply_to(message, "❌ အမှားအယွင်း ဖြစ်သွားပါသည်။ ပုံစံ- /sendkey [ID] [စာသား]")
 
-# တိုက်ရိုက် စာပို့ပါက သတိပေးစာ ပို့ခြင်း
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def handle_direct_text(message):
     if not is_bot_active(): return
-    # Admin ဆိုလျှင် သတိပေးစာ မပို့ပါ
     if str(message.chat.id) == ADMIN_ID:
         return
     
@@ -176,6 +170,9 @@ def handle_direct_text(message):
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_housewife')
 def housewife_detail(call):
     if not is_bot_active(): return
+    # ခလုတ် Loading လည်နေခြင်းကို ရပ်ပေးသော အပိုင်း
+    bot.answer_callback_query(call.id) 
+
     detail_text = (
         "🌸 **'အိမ်ရှင်မ' ဘတ်ဂျက် App** 🌸\n\n"
         "မိသားစုရဲ့ လစဉ် ဝင်ငွေ၊ ထွက်ငွေတွေကို စာအုပ်ထဲမှာ ရေးမှတ်နေရတာ ရှုပ်ထွေးနေပြီလား? "
@@ -192,12 +189,27 @@ def housewife_detail(call):
         "🛒 **ဝယ်ယူရန်:** အောက်ပါ '💳 ဝယ်ယူမည်' ကို နှိပ်ပါ"
     )
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton(text="💳 ဝယ်ယူမည်", callback_data="buy_housewife"))
+    
+    # ခလုတ် (၁) ဝယ်ယူမည် (အပေါ်ဆုံး)
+    btn_buy = types.InlineKeyboardButton(text="💳 ဝယ်ယူမည်", callback_data="buy_housewife")
+    
+    # ခလုတ် (၂) App Link (အောက်ပါ url နေရာတွင် ဆရာ့ App Link အစစ်ကို ပြောင်းထည့်ပါ)
+    btn_app = types.InlineKeyboardButton(text="📥 App ဒေါင်းလုဒ်ဆွဲရန်", url="https://drive.google.com/file/d/15lZC6JSUMBvlFV9oLtMaWW7olH0pfVcG/view?usp=drive_link")
+    
+    # ခလုတ် (၃) YouTube လမ်းညွှန် (အောက်ပါ url နေရာတွင် ဆရာ့ YouTube Link အစစ်ကို ပြောင်းထည့်ပါ)
+    btn_guide = types.InlineKeyboardButton(text="📖 အသုံးပြုနည်း လမ်းညွှန်", url="https://youtube.com/your-video-link")
+    
+    # ခလုတ်များကို Menu ပေါ်တွင် နေရာချခြင်း
+    markup.add(btn_buy)
+    markup.row(btn_app, btn_guide) # App ခလုတ်နှင့် လမ်းညွှန်ခလုတ်ကို တစ်တန်းတည်းထားခြင်း
+    
     bot.send_photo(call.message.chat.id, HOUSEWIFE_APP_IMAGE, caption=detail_text, reply_markup=markup, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: call.data == 'buy_housewife')
 def buy_housewife_step(call):
     if not is_bot_active(): return
+    bot.answer_callback_query(call.id) # Loading ရပ်ရန်
+
     buy_text = (
         "💳 **'အိမ်ရှင်မ' App ဝယ်ယူရန် အဆင့်ဆင့်**\n\n"
         "၁။ မိမိဝယ်ယူလိုသော Package အတွက် ကျသင့်ငွေကို '💳 ငွေလွှဲအကောင့်များ' ခလုတ်တွင် ကြည့်၍ လွှဲပေးပါ။\n\n"
@@ -213,6 +225,8 @@ def buy_housewife_step(call):
 @bot.callback_query_handler(func=lambda call: call.data == 'prod_canva')
 def canva_detail(call):
     if not is_bot_active(): return
+    bot.answer_callback_query(call.id) # Loading ရပ်ရန်
+
     detail_text = (
         "🎨 **Canva EDU account (1 Year) ရပါပြီ**\n\n"
         "➡️ **Price** - 5,000 ks\n"
