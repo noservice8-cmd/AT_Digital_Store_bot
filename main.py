@@ -232,7 +232,13 @@ def canva_detail(call):
 # ၇။ Program စတင်သည့် အပိုင်း (Main Execution)
 # ==========================================
 if __name__ == "__main__":
+    # Render ၏ Port Timeout မဖြစ်စေရန် Flask ကို အရင်စတင်ပါမည်
     keep_alive()
+    
+    # Bot Token မှန်ကန်ပါက Polling စတင်ပါမည်
     if bot:
+        print("Clearing old connections...")
+        bot.remove_webhook()  # <--- ဤစာကြောင်းလေး အသစ်ထပ်ထည့်ပေးပါဆရာ
+        
         print("Bot is successfully running...")
         bot.infinity_polling(timeout=20, long_polling_timeout=10)
